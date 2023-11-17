@@ -2,11 +2,9 @@ import pygame
 from pygame.locals import*
 from pygame import mixer
 
-
 pygame.mixer.pre_init(44100,-16,2,512)
 mixer.init()
 pygame.init()
-
 
 clock = pygame.time.Clock()
 fps = 60
@@ -20,6 +18,7 @@ pygame.display.set_caption('Platformer')
 #define font
 font_score = pygame.font.SysFont('Bauhaus 93',30)
 font = pygame.font.SysFont('Bauhaus 93',70)
+font_win = pygame.font.SysFont('Bauhaus 93',100)
 
 #define game variables
 tile_size = 50
@@ -28,22 +27,22 @@ main_menu = True
 level = 0
 max_level = 4
 score = 0
-game_paused = False
 
 
 #deffine color
 white = (255, 255, 255)
 blue = (0,0,255)
-
-#load souns
-pygame.mixer.music.load('img/music.wav')
+red = (255,0,0)
+#load sounds
+pygame.mixer.music.load('sound/music.wav')
 pygame.mixer.music.play(-1,0.0,5000)
-coin_fx = pygame.mixer.Sound('img/coin.wav')
+coin_fx = pygame.mixer.Sound('sound/coin.wav')
 coin_fx.set_volume(0.5)
-jump_fx = pygame.mixer.Sound('img/jump.wav')
+jump_fx = pygame.mixer.Sound('sound/jump.wav')
 jump_fx.set_volume(0.5)
-game_over_fx = pygame.mixer.Sound('img/game_over.wav')
+game_over_fx = pygame.mixer.Sound('sound/game_over.wav')
 game_over_fx.set_volume(0.5)
+
 
 #load images
 sun_img = pygame.image.load('img/sun.png')
@@ -51,15 +50,10 @@ bg_img = pygame.image.load('img/sky.png')
 restart_img = pygame.image.load('img/restart_btn.png')
 start_img = pygame.image.load('img/start_btn.png')
 exit_img = pygame.image.load('img/exit_btn.png')
-resume_img = pygame.image.load('img/button_resume.png').convert_alpha()
-audio_img = pygame.image.load('img/button_audio.png').convert_alpha()
-quit_img = pygame.image.load('img/button_quit.png').convert_alpha()
  
-
 def draw_text(text,font,text_col,x,y):
     img = font.render(text,True,text_col)
     screen.blit(img,(x,y))
-
 
 #function to reset level
 def reset_level(level):
@@ -87,7 +81,6 @@ class Button():
         self.rect.y = y
         self.clicked = False
 
-
     def draw(self):
         action = False
         #get mouse posistion
@@ -103,14 +96,7 @@ class Button():
         
         #draw button
         screen.blit(self.image,self.rect)
-
         return action
-
-
-
-#creat button
-resume_button = Button(screen_width//2-100,430,resume_img) 
-quit_button = Button(screen_width//2-70,530,quit_img)
 
 class Player():
     def __init__(self,x,y):
@@ -190,7 +176,6 @@ class Player():
                 game_over_fx.play()
             if pygame.sprite.spritecollide(self,exit_group,False):
                 game_over = 1
-
 
             #check for collison with platforms
             for platform in platform_group:
@@ -299,8 +284,6 @@ class World():
             screen.blit(tile[0],tile[1])
             # pygame.draw.rect(screen,(255,255,255),tile[1],2)
 
-
-
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
@@ -330,7 +313,6 @@ class Platform(pygame.sprite.Sprite):
 		self.move_direction = 1
 		self.move_x = move_x
 		self.move_y = move_y
-
 
 	def update(self):
 		self.rect.x += self.move_direction * self.move_x
@@ -366,50 +348,6 @@ class Exit(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y 
 
-world_data4 = [
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 1], 
-[1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 2, 2, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 7, 0, 5, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1], 
-[1, 7, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 1], 
-[1, 0, 2, 0, 0, 7, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 2, 0, 0, 4, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0, 2, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 1], 
-[1, 0, 0, 0, 0, 0, 2, 2, 2, 6, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1], 
-[1, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
-[1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
-[1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-]
-world_data2 = [
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 8, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 2, 2, 0, 0, 0, 4, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1]
-]
 world_data0 = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
@@ -456,6 +394,29 @@ world_data1 = [
 [1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
+world_data2 = [
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 8, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 2, 2, 0, 0, 0, 4, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1]
+]
+
 world_data3 = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
@@ -479,6 +440,29 @@ world_data3 = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
+world_data4 = [
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 1], 
+[1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 2, 2, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 7, 0, 5, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1], 
+[1, 7, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 1], 
+[1, 0, 2, 0, 0, 7, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 2, 0, 0, 4, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0, 2, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 1], 
+[1, 0, 0, 0, 0, 0, 2, 2, 2, 6, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1], 
+[1, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
+[1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
+[1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+]
+
 player = Player(100,screen_height -130)
 blob_group = pygame.sprite.Group()
 platform_group = pygame.sprite.Group()
@@ -494,7 +478,7 @@ coin_group1.add(score_coin)
 world = World(world_data0)
 button_restart = Button(screen_width//2 - 50, screen_height//2 + 100,restart_img)
 button_start = Button(screen_width//2 - 350, screen_height//2 ,start_img)
-button_exit = Button(screen_width//2 + 150, screen_height//2 ,exit_img)
+button_exit = Button(screen_width//2 + 100, screen_height//2 ,exit_img)
 
 run = True
 while run:
@@ -508,63 +492,51 @@ while run:
         if button_exit.draw():
             run = False
     else:
-        if game_paused == True:
-            screen.fill((52,78,91))
-            if resume_button.draw():
-                game_paused = False
-            if quit_button.draw():
-                run = False
-        else:
-            world.draw()
-            if game_over==0:
-                platform_group.update()
-                blob_group.update()
-                #update score
-                #check if a coin has been collected
-                if pygame.sprite.spritecollide(player,coin_group,True):
-                    score+=1
-                    coin_fx.play()
-                draw_text('x ' + str(score),font_score,white,tile_size-5,17)
-                draw_text('Level ' + str(level),font_score,white,screen_width//2,17)
+        world.draw()
+        if game_over==0:
+            platform_group.update()
+            blob_group.update()
+            #update score
+            #check if a coin has been collected
+            if pygame.sprite.spritecollide(player,coin_group,True):
+                score+=1
+                coin_fx.play()
+            draw_text('x ' + str(score),font_score,white,tile_size-5,17)
+            draw_text('Level ' + str(level),font_score,white,screen_width//2,17)
             
-
-            blob_group.draw(screen)
-            platform_group.draw(screen)
-            lava_group.draw(screen)
-            coin_group.draw(screen)
-            coin_group1.draw(screen)
-            exit_group.draw(screen)
-            game_over = player.update(game_over)
+        blob_group.draw(screen)
+        platform_group.draw(screen)
+        lava_group.draw(screen)
+        coin_group.draw(screen)
+        coin_group1.draw(screen)
+        exit_group.draw(screen)
+        game_over = player.update(game_over)
             
-            #if player has died
-            if game_over == -1:
-                    if button_restart.draw():
-                        world = reset_level(level)
-                        game_over = 0
-                        score = 0
-
-            #if player has completed the level
-            if game_over == 1:
-                #reset game and go to next level
-                level +=1
-                if level <= max_level:
-                    #reset level
+        #if player has died
+        if game_over == -1:
+                if button_restart.draw():
                     world = reset_level(level)
                     game_over = 0
-                else:
-                    #restart the game
-                    draw_text('YOU WIN!',font,blue,(screen_width//2)-150, screen_height//2)
-                    if button_restart.draw():
-                        level = 0
-                        world = reset_level(level)
-                        game_over = 0
-                        score = 0
+                    score = 0
+
+        #if player has completed the level
+        if game_over == 1:
+            #reset game and go to next level
+            level +=1
+            if level <= max_level:
+                    #reset level
+                world = reset_level(level)
+                game_over = 0
+            else:
+                #restart the game
+                draw_text('YOU WIN!',font_win,red,340, screen_height//2-30)
+                if button_restart.draw():
+                    level = 0
+                    world = reset_level(level)
+                    game_over = 0
+                    score = 0
 
     for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                game_paused = True
-                print('paused')
         if event.type == pygame.QUIT:
             run=False
 
