@@ -9,19 +9,19 @@ pygame.init()
 clock = pygame.time.Clock()
 fps = 60
 
-screen_width = 1000
-screen_height = 1000
+screen_width = 800
+screen_height = 800
 
 screen = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption('Platformer')
 
 #define font
-font_score = pygame.font.SysFont('Bauhaus 93',30)
-font = pygame.font.SysFont('Bauhaus 93',70)
-font_win = pygame.font.SysFont('Bauhaus 93',100)
+font_score = pygame.font.SysFont('Bauhaus 93',24)
+font = pygame.font.SysFont('Bauhaus 93',56)
+font_win = pygame.font.SysFont('Bauhaus 93',80)
 
 #define game variables
-tile_size = 50
+tile_size = 40
 game_over = 0
 main_menu = True
 level = 0
@@ -57,7 +57,7 @@ def draw_text(text,font,text_col,x,y):
 
 #function to reset level
 def reset_level(level):
-    player.reset(100,screen_height-130)
+    player.reset(80,screen_height-104)
     platform_group.empty()
     blob_group.empty()
     lava_group.empty()
@@ -218,7 +218,7 @@ class Player():
         self.counter = 0
         for num in range(1,5):
             img_right = pygame.image.load(f'img/guy{num}.png')
-            img_right = pygame.transform.scale(img_right,(40,80))
+            img_right = pygame.transform.scale(img_right,(32,64))
             img_left = pygame.transform.flip(img_right,True,False)
 
             self.images_left.append(img_left)
@@ -288,6 +288,7 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('img/blob.png')
+        self.image = pygame.transform.scale(self.image,(36.8,28))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -297,7 +298,7 @@ class Enemy(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.move_direction
         self.move_counter += 1
-        if self.move_counter> 50:
+        if self.move_counter> 40:
             self.move_direction *= -1
             self.move_counter *= -1
 
@@ -463,7 +464,7 @@ world_data4 = [
 [1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
-player = Player(100,screen_height -130)
+player = Player(80,screen_height -104)
 blob_group = pygame.sprite.Group()
 platform_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
@@ -529,7 +530,7 @@ while run:
                 game_over = 0
             else:
                 #restart the game
-                draw_text('YOU WIN!',font_win,red,340, screen_height//2-30)
+                draw_text('YOU WIN!',font_win,red,280, screen_height//2-30)
                 if button_restart.draw():
                     level = 0
                     world = reset_level(level)
